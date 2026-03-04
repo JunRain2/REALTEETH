@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: realteeth
+  r2dbc:
+    url: r2dbc:mysql://localhost:3306/realteeth
+    username: root
+    password: 1234
+
+springdoc:
+  swagger-ui:
+    path: /docs
+  use-fqn: true
