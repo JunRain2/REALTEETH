@@ -1,4 +1,4 @@
-package com.mock.realteeth.controller.dto
+package com.mock.realteeth.ui.dto
 
 data class ApiError(
     val code: String? = null,

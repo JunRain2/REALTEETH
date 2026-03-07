@@ -1,4 +1,4 @@
-package com.mock.realteeth.domain
+package com.mock.realteeth.command.domain
 
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id

@@ -44,6 +44,10 @@ dependencies {
     // Logging
     implementation("io.github.oshai:kotlin-logging-jvm:$kotlinLoggingVersion")
 
+    // ShedLock
+    implementation("net.javacrumbs.shedlock:shedlock-spring:5.16.0")
+    implementation("net.javacrumbs.shedlock:shedlock-provider-r2dbc:5.16.0")
+
     // API Docs
     implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:$springdocVersion")
 

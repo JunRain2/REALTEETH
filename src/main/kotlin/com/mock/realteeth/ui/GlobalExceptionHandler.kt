@@ -1,7 +1,7 @@
-package com.mock.realteeth.controller
+package com.mock.realteeth.ui
 
-import com.mock.realteeth.controller.dto.ApiResponse
-import com.mock.realteeth.domain.exception.BusinessException
+import com.mock.realteeth.command.domain.exception.BusinessException
+import com.mock.realteeth.ui.dto.ApiResponse
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.validation.ConstraintViolationException
 import org.springframework.http.HttpStatus

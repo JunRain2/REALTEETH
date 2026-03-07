@@ -1,4 +1,4 @@
-package com.mock.realteeth.infrastructure.config
+package com.mock.realteeth.infra.config
 
 import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.info.Info
@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class SwaggerConfig(
-    @Value("\${spring.application.name}") private val appName: String,
+    @Value("\${spring.application.name:application}") private val appName: String,
 ) {
     @Bean
     fun openAPI(): OpenAPI =

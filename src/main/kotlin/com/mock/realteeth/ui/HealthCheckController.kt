@@ -1,4 +1,4 @@
-package com.mock.realteeth.controller
+package com.mock.realteeth.ui
 
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping

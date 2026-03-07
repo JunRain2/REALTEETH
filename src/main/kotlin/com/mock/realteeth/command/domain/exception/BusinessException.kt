@@ -1,4 +1,4 @@
-package com.mock.realteeth.domain.exception
+package com.mock.realteeth.command.domain.exception
 
 class BusinessException(
     val errorCode: ErrorCode,
