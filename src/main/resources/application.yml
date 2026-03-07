@@ -17,6 +17,12 @@ springdoc:
   use-fqn: true
 
 app:
+  resilience:
+    circuit-breaker:
+      sliding-window-size: 5
+      failure-rate-threshold: 60
+      wait-duration-in-open-state-seconds: 30
+      permitted-number-of-calls-in-half-open-state: 1
   named-lock:
     pool-size: 5
     initial-size: 1

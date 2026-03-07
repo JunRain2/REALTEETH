@@ -1,6 +1,8 @@
 val r2dbcMysqlVersion: String by project
 val kotlinLoggingVersion: String by project
 val springdocVersion: String by project
+val shedlockVersion: String by project
+val resilience4jVersion: String by project
 val ktlintVersion: String by project
 
 plugins {
@@ -45,8 +47,12 @@ dependencies {
     implementation("io.github.oshai:kotlin-logging-jvm:$kotlinLoggingVersion")
 
     // ShedLock
-    implementation("net.javacrumbs.shedlock:shedlock-spring:5.16.0")
-    implementation("net.javacrumbs.shedlock:shedlock-provider-r2dbc:5.16.0")
+    implementation("net.javacrumbs.shedlock:shedlock-spring:$shedlockVersion")
+    implementation("net.javacrumbs.shedlock:shedlock-provider-r2dbc:$shedlockVersion")
+
+    // Resilience4j
+    implementation("io.github.resilience4j:resilience4j-spring-boot3:$resilience4jVersion")
+    implementation("io.github.resilience4j:resilience4j-kotlin:$resilience4jVersion")
 
     // API Docs
     implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:$springdocVersion")

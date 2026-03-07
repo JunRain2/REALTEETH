@@ -35,8 +35,8 @@ class ToothAnalysisService(
         )
     }
 
-    suspend fun processPendingAnalyses() {
-        toothAnalysisRepository.findAllByStatusOrderByLastSentAtAsc(ToothAnalysisStatus.PENDING).collect { toothAnalysis ->
+    suspend fun processPendingAnalyses(limit: Int = Int.MAX_VALUE) {
+        toothAnalysisRepository.findAllByStatusOrderByLastSentAtAsc(ToothAnalysisStatus.PENDING).take(limit).collect { toothAnalysis ->
             runCatching {
                 if (toothAnalysis.isSendLimitExceeded(maxSendCount)) {
                     toothAnalysis.markAsFailed("최대 전송 횟수(${maxSendCount}회) 초과")
@@ -50,8 +50,8 @@ class ToothAnalysisService(
         }
     }
 
-    suspend fun processProcessingAnalyses() {
-        toothAnalysisRepository.findAllByStatusOrderByLastSentAtAsc(ToothAnalysisStatus.PROCESSING).collect { toothAnalysis ->
+    suspend fun processProcessingAnalyses(limit: Int = Int.MAX_VALUE) {
+        toothAnalysisRepository.findAllByStatusOrderByLastSentAtAsc(ToothAnalysisStatus.PROCESSING).take(limit).collect { toothAnalysis ->
             runCatching {
                 if (toothAnalysis.isSendLimitExceeded(maxSendCount)) {
                     toothAnalysis.markAsFailed("최대 전송 횟수(${maxSendCount}회) 초과")

@@ -7,6 +7,9 @@ import com.mock.realteeth.command.domain.ToothAnalysisClient
 import com.mock.realteeth.command.domain.ToothAnalysisStatus
 import com.mock.realteeth.command.domain.ToothImage
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException
+import io.github.resilience4j.circuitbreaker.CircuitBreaker
+import io.github.resilience4j.kotlin.circuitbreaker.executeSuspendFunction
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
@@ -17,22 +20,28 @@ private val log = KotlinLogging.logger {}
 @Component
 class ToothAnalysisClientImpl(
     private val toothAnalysisWebClient: WebClient,
+    private val circuitBreaker: CircuitBreaker,
 ) : ToothAnalysisClient {
     override suspend fun requestAnalysis(toothImage: ToothImage): RequestAnalysisResult =
         try {
             val response =
-                toothAnalysisWebClient
-                    .post()
-                    .uri("/process")
-                    .bodyValue(MockAnalyzeRequest(toothImage.url))
-                    .retrieve()
-                    .bodyToMono(MockAnalyzeResponse::class.java)
-                    .awaitSingle()
+                circuitBreaker.executeSuspendFunction {
+                    toothAnalysisWebClient
+                        .post()
+                        .uri("/process")
+                        .bodyValue(MockAnalyzeRequest(toothImage.url))
+                        .retrieve()
+                        .bodyToMono(MockAnalyzeResponse::class.java)
+                        .awaitSingle()
+                }
 
             RequestAnalysisResult(
                 analysisStatus = response.status.toToothAnalysisStatus(),
                 jobId = response.jobId,
             )
+        } catch (e: CallNotPermittedException) {
+            log.warn { "requestAnalysis circuit breaker open: imageUrl=${toothImage.url}" }
+            RequestAnalysisResult(analysisStatus = ToothAnalysisStatus.PENDING)
         } catch (e: WebClientResponseException) {
             when (val status = e.statusCode.value()) {
                 400 -> {
@@ -63,14 +72,19 @@ class ToothAnalysisClientImpl(
     override suspend fun fetchStatus(toothAnalysis: ToothAnalysis): FetchStatusResult =
         try {
             val response =
-                toothAnalysisWebClient
-                    .get()
-                    .uri("/process/${toothAnalysis.jobId}")
-                    .retrieve()
-                    .bodyToMono(MockStatusResponse::class.java)
-                    .awaitSingle()
+                circuitBreaker.executeSuspendFunction {
+                    toothAnalysisWebClient
+                        .get()
+                        .uri("/process/${toothAnalysis.jobId}")
+                        .retrieve()
+                        .bodyToMono(MockStatusResponse::class.java)
+                        .awaitSingle()
+                }
 
             FetchStatusResult(analysisStatus = response.status.toToothAnalysisStatus(), result = response.result)
+        } catch (e: CallNotPermittedException) {
+            log.warn { "fetchStatus circuit breaker open: jobId=${toothAnalysis.jobId}" }
+            FetchStatusResult(analysisStatus = ToothAnalysisStatus.PROCESSING)
         } catch (e: WebClientResponseException) {
             val status = e.statusCode.value()
             when (status) {
