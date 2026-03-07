@@ -1,6 +1,11 @@
+server:
+  shutdown: graceful
+
 spring:
   application:
     name: realteeth
+  lifecycle:
+    timeout-per-shutdown-phase: 35s
   r2dbc:
     url: r2dbc:mysql://localhost:3306/realteeth
     username: root
@@ -10,3 +15,28 @@ springdoc:
   swagger-ui:
     path: /docs
   use-fqn: true
+
+app:
+  named-lock:
+    pool-size: 5
+    initial-size: 1
+    max-idle-time-minutes: 10
+    max-acquire-time-seconds: 30
+  tooth-analysis:
+    max-send-count: 5
+    status-poll-interval-ms: 2000
+  scheduler:
+    pending-analysis:
+      fixed-delay-ms: 10000
+      lock-at-most-for: PT30S
+    processing-analysis:
+      fixed-delay-ms: 10000
+      lock-at-most-for: PT30S
+    task-scheduler:
+      pool-size: 2
+      await-termination-seconds: 35
+
+client:
+  tooth-analysis:
+    base-url: https://dev.realteeth.ai/mock
+    api-key: mock_78b70376b9c74449931f7622c0790f3d
