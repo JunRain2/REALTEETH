@@ -43,7 +43,7 @@ class ToothAnalysisServiceIntegrationTest(
     @Test
     fun `analyzeTooth - 결과를 반환한다`() =
         runTest {
-            val result = commandService.analyzeTooth(AnalyzeToothCommand("https://example.com/tooth.jpg"))
+            val result = commandService.analyzeTooth(AnalyzeToothCommand("https://example.com/tooth.jpg", "abc123hash001"))
 
             assertTrue(result.toothAnalysisId > 0)
             assertEquals(ToothAnalysisStatus.PENDING, result.toothAnalysisStatus)
@@ -53,7 +53,7 @@ class ToothAnalysisServiceIntegrationTest(
     fun `analyzeTooth - ToothImage와 ToothAnalysis가 DB에 저장된다`() =
         runTest {
             val imageUrl = "https://example.com/tooth.jpg"
-            val result = commandService.analyzeTooth(AnalyzeToothCommand(imageUrl))
+            val result = commandService.analyzeTooth(AnalyzeToothCommand(imageUrl, "abc123hash002"))
 
             val toothAnalysis = assertNotNull(toothAnalysisRepository.findById(result.toothAnalysisId))
             assertEquals(ToothAnalysisStatus.PENDING, toothAnalysis.status)
@@ -64,12 +64,22 @@ class ToothAnalysisServiceIntegrationTest(
             assertEquals(imageUrl, toothImage.url)
         }
 
+    @Test
+    fun `analyzeTooth - 동일 imageHash로 재요청 시 기존 분석을 반환한다`() =
+        runTest {
+            val first = commandService.analyzeTooth(AnalyzeToothCommand("https://example.com/tooth.jpg", "duplicate-hash"))
+            val second = commandService.analyzeTooth(AnalyzeToothCommand("https://example.com/tooth.jpg", "duplicate-hash"))
+
+            assertEquals(first.toothAnalysisId, second.toothAnalysisId)
+            assertEquals(1L, toothAnalysisRepository.count())
+        }
+
     // ===== processPendingAnalyses =====
 
     @Test
     fun `processPendingAnalyses - PENDING 분석을 PROCESSING으로 전환하고 jobId와 sendCount를 저장한다`() =
         runTest {
-            val created = commandService.analyzeTooth(AnalyzeToothCommand("https://example.com/tooth.jpg"))
+            val created = commandService.analyzeTooth(AnalyzeToothCommand("https://example.com/tooth.jpg", "abc123hash003"))
 
             commandService.processPendingAnalyses()
 
@@ -110,7 +120,7 @@ class ToothAnalysisServiceIntegrationTest(
         runTest {
             StubToothAnalysisClientConfig.requestAnalysisResult =
                 RequestAnalysisResult(analysisStatus = ToothAnalysisStatus.FAILED, result = "분석 실패")
-            val created = commandService.analyzeTooth(AnalyzeToothCommand("https://example.com/tooth.jpg"))
+            val created = commandService.analyzeTooth(AnalyzeToothCommand("https://example.com/tooth.jpg", "abc123hash004"))
 
             commandService.processPendingAnalyses()
 
@@ -123,7 +133,7 @@ class ToothAnalysisServiceIntegrationTest(
     fun `processPendingAnalyses - 여러 건의 PENDING이 있을 때 모두 처리된다`() =
         runTest {
             repeat(3) { i ->
-                commandService.analyzeTooth(AnalyzeToothCommand("https://example.com/tooth$i.jpg"))
+                commandService.analyzeTooth(AnalyzeToothCommand("https://example.com/tooth$i.jpg", "abc123hash00$i"))
             }
 
             commandService.processPendingAnalyses()
@@ -140,7 +150,7 @@ class ToothAnalysisServiceIntegrationTest(
     @Test
     fun `processProcessingAnalyses - PROCESSING 분석의 상태를 fetchStatus 결과로 업데이트한다`() =
         runTest {
-            val created = commandService.analyzeTooth(AnalyzeToothCommand("https://example.com/tooth.jpg"))
+            val created = commandService.analyzeTooth(AnalyzeToothCommand("https://example.com/tooth.jpg", "abc123hash005"))
             commandService.processPendingAnalyses()
 
             commandService.processProcessingAnalyses()
@@ -154,7 +164,7 @@ class ToothAnalysisServiceIntegrationTest(
         runTest {
             StubToothAnalysisClientConfig.fetchStatusResult =
                 FetchStatusResult(analysisStatus = ToothAnalysisStatus.COMPLETED, result = "분석 완료 결과")
-            val created = commandService.analyzeTooth(AnalyzeToothCommand("https://example.com/tooth.jpg"))
+            val created = commandService.analyzeTooth(AnalyzeToothCommand("https://example.com/tooth.jpg", "abc123hash006"))
             commandService.processPendingAnalyses()
 
             commandService.processProcessingAnalyses()
@@ -169,7 +179,7 @@ class ToothAnalysisServiceIntegrationTest(
         runTest {
             StubToothAnalysisClientConfig.fetchStatusResult =
                 FetchStatusResult(analysisStatus = ToothAnalysisStatus.FAILED, result = "처리 실패")
-            val created = commandService.analyzeTooth(AnalyzeToothCommand("https://example.com/tooth.jpg"))
+            val created = commandService.analyzeTooth(AnalyzeToothCommand("https://example.com/tooth.jpg", "abc123hash007"))
             commandService.processPendingAnalyses()
 
             commandService.processProcessingAnalyses()
