@@ -3,11 +3,11 @@ package com.mock.realteeth.query.application
 import com.mock.realteeth.command.domain.ToothAnalysisStatus
 import com.mock.realteeth.command.domain.exception.BusinessException
 import com.mock.realteeth.command.domain.exception.ErrorCode
+import com.mock.realteeth.query.dao.ToothAnalysisQueryRepository
 import com.mock.realteeth.query.dto.GetToothAnalysisResult
 import com.mock.realteeth.query.dto.ListToothAnalysisQuery
 import com.mock.realteeth.query.dto.ListToothAnalysisResult
 import com.mock.realteeth.query.dto.StreamAnalysisStatusResult
-import com.mock.realteeth.query.repository.ToothAnalysisQueryRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

@@ -1,4 +1,4 @@
-package com.mock.realteeth.query.repository
+package com.mock.realteeth.query.dao
 
 import com.mock.realteeth.command.domain.ToothAnalysis
 import com.mock.realteeth.command.domain.ToothAnalysisStatus
