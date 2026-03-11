@@ -24,7 +24,7 @@ services:
       SPRING_R2DBC_URL: r2dbc:mysql://mysql:3306/realteeth
       SPRING_R2DBC_USERNAME: root
       SPRING_R2DBC_PASSWORD: 1234
-      CLIENT_TOOTH_ANALYSIS_API_KEY: mock_78b70376b9c74449931f7622c0790f3d
+      CLIENT_TOOTH_ANALYSIS_API_KEY: mock_772896ccc4414139814bc6c8180ba936
     depends_on:
       mysql:
         condition: service_healthy
