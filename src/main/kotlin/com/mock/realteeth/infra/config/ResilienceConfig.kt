@@ -4,11 +4,11 @@ import io.github.resilience4j.circuitbreaker.CircuitBreaker
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig.SlidingWindowType
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
-import java.time.Duration
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import java.time.Duration
 
 @Configuration
 class ResilienceConfig(
@@ -20,7 +20,8 @@ class ResilienceConfig(
     @Bean
     fun toothAnalysisCircuitBreaker(registry: CircuitBreakerRegistry): CircuitBreaker {
         val config =
-            CircuitBreakerConfig.custom()
+            CircuitBreakerConfig
+                .custom()
                 .slidingWindowType(SlidingWindowType.COUNT_BASED)
                 .slidingWindowSize(slidingWindowSize)
                 .failureRateThreshold(failureRateThreshold)
@@ -32,8 +33,7 @@ class ResilienceConfig(
                         is WebClientResponseException -> e.statusCode.value() !in listOf(400, 422)
                         else -> true
                     }
-                }
-                .build()
+                }.build()
         return registry.circuitBreaker("toothAnalysis", config)
     }
 }
