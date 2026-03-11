@@ -45,4 +45,4 @@ app:
 client:
   tooth-analysis:
     base-url: https://dev.realteeth.ai/mock
-    api-key: ${CLIENT_TOOTH_ANALYSIS_API_KEY}
+    api-key: ${CLIENT_TOOTH_ANALYSIS_API_KEY:test-api-key}
