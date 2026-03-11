@@ -1,9 +1,11 @@
 CREATE TABLE IF NOT EXISTS tooth_images (
     id         BIGINT        AUTO_INCREMENT PRIMARY KEY,
     url        VARCHAR(500)  NOT NULL,
+    image_hash VARCHAR(32)   DEFAULT NULL,
     created_at DATETIME(6)   DEFAULT CURRENT_TIMESTAMP(6),
     updated_at DATETIME(6)   DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
-    deleted_at DATETIME(6)   DEFAULT NULL
+    deleted_at DATETIME(6)   DEFAULT NULL,
+    UNIQUE KEY uk_tooth_images_image_hash (image_hash)
 );
 
 CREATE TABLE IF NOT EXISTS tooth_analyses (

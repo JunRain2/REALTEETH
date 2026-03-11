@@ -6,4 +6,5 @@ import org.springframework.data.relational.core.mapping.Table
 @Table("tooth_images")
 class ToothImage(
     @Column("url") val url: String,
+    @Column("image_hash") val imageHash: String? = null,
 ) : BaseEntity()

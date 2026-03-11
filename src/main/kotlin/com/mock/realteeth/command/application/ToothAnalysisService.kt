@@ -11,6 +11,7 @@ import com.mock.realteeth.command.domain.ToothImageRepository
 import com.mock.realteeth.command.domain.exception.BusinessException
 import com.mock.realteeth.command.domain.exception.ErrorCode
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.flow.take
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -26,7 +27,12 @@ class ToothAnalysisService(
 ) {
     @Transactional
     suspend fun analyzeTooth(command: AnalyzeToothCommand): AnalyzeToothResult {
-        val toothImage = toothImageRepository.save(ToothImage(command.imageUrl))
+        toothImageRepository
+            .findByImageHash(command.imageHash)
+            ?.let { toothAnalysisRepository.findFirstActiveByImageId(it.id) }
+            ?.let { return AnalyzeToothResult(it.id, it.status) }
+
+        val toothImage = toothImageRepository.save(ToothImage(command.imageUrl, command.imageHash))
         val toothAnalysis = toothAnalysisRepository.save(ToothAnalysis.prepare(toothImage))
 
         return AnalyzeToothResult(
